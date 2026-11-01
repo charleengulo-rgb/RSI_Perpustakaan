@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant A0 as Pustakawan
+    participant A1 as HalamanStokController
+    participant A2 as StokService
+    participant A3 as Buku / Repository
+    A0->>A1: S1: kirim idBuku dan stokBaru
+    A1->>A2: S2: ubahStok(idBuku, stokBaru)
+    A2->>A3: S3: cariUntukUpdate(idBuku)
+    A3-->>A2: S4: buku
+    break Buku tidak ditemukan: S8-S9 tampilkan pesan; proses berhenti
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: S5: ubahStok(stokBaru)
+    A3-->>A2: S6: validasi selesai
+    break Stok negatif: S8-S9 tampilkan pesan; stok tetap
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: S7: save(buku)
+    A2-->>A1: S8: berhasil; transaksi commit
+    A1-->>A0: S9: redirect GET /stok; pesan & daftar

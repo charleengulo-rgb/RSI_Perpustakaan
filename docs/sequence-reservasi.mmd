@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant A0 as Anggota
+    participant A1 as HalamanReservasiController
+    participant A2 as ReservasiService
+    participant A3 as Entity / Repository
+    A0->>A1: R1: POST konfirmasi(idBuku)
+    A1->>A2: R2: ajukanReservasi(idAnggota, idBuku)
+    A2->>A3: R3: ambil anggota & buku dengan lock
+    break Anggota/buku tidak ada: R10-R11 pesan; proses berhenti
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: R4: buku.cekStok()
+    A3-->>A2: R5: hasil pemeriksaan stok
+    break Stok > 0: R10-R11 arahkan untuk meminjam; tidak disimpan
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: R6: existsByAnggota...AndBuku...()
+    A3-->>A2: R7: hasil pemeriksaan duplikat
+    break Sudah ada reservasi: R10-R11 pesan; tidak disimpan
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: R8: Reservasi.buat(anggota, buku)
+    A2->>A3: R9: reservasiRepository.save(r)
+    A2-->>A1: R10: Bukti.dari(r); transaksi commit
+    A1-->>A0: R11: redirect GET /reservasi; bukti

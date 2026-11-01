@@ -1,0 +1,4 @@
+CREATE TABLE buku(id_buku VARCHAR(10) PRIMARY KEY, judul VARCHAR(200) NOT NULL, stok INTEGER NOT NULL CHECK(stok>=0));
+CREATE TABLE anggota(id_anggota VARCHAR(10) PRIMARY KEY, nama VARCHAR(100) NOT NULL, batas_pinjam INTEGER NOT NULL CHECK(batas_pinjam>0));
+CREATE TABLE transaksi_pinjam(id_transaksi VARCHAR(36) PRIMARY KEY, id_anggota VARCHAR(10) NOT NULL REFERENCES anggota(id_anggota), id_buku VARCHAR(10) NOT NULL REFERENCES buku(id_buku), tanggal_pinjam DATE NOT NULL, status VARCHAR(20) NOT NULL CHECK(status='DIPINJAM'));
+CREATE TABLE reservasi(id_reservasi VARCHAR(36) PRIMARY KEY, id_anggota VARCHAR(10) NOT NULL REFERENCES anggota(id_anggota), id_buku VARCHAR(10) NOT NULL REFERENCES buku(id_buku), tanggal_reservasi DATE NOT NULL, status VARCHAR(20) NOT NULL CHECK(status='MENUNGGU'), CONSTRAINT uk_reservasi_anggota_buku UNIQUE(id_anggota,id_buku));

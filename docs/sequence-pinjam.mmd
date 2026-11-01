@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant A0 as Anggota
+    participant A1 as HalamanPinjamController
+    participant A2 as PinjamService
+    participant A3 as Entity / Repository
+    A0->>A1: P1: POST pilihBuku(idBuku)
+    A1->>A2: P2: pinjamBuku(idAnggota, idBuku)
+    A2->>A3: P3: ambil data; cekBatasPinjam()
+    A3-->>A2: P4: hasil pemeriksaan batas
+    break Batas tercapai/data tidak ada: pesan gagal; proses berhenti
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: P5: buku.cekStok()
+    A3-->>A2: P6: hasil pemeriksaan stok
+    break Stok habis: P13 exception; P14 pesan + tautan reservasi
+        A2-->>A1: Pesan kegagalan
+        A1-->>A0: Tampilkan pesan
+    end
+    A2->>A3: P7: TransaksiPinjam.buat(anggota,buku)
+    A2->>A3: P8: transaksiRepository.save(t)
+    A2->>A3: P9: buku.kurangiStok()
+    A2->>A3: P10: bukuRepository.save(buku)
+    A2-->>A1: P11: Bukti.dari(t); transaksi commit
+    A1-->>A0: P12: redirect GET /pinjam; bukti

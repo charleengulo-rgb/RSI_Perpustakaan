@@ -1,0 +1,5 @@
+Verifikasi 1 November 2026
+Java 17; Maven 3.9.9
+mvn test: 39 tests, 0 failures, 0 errors, 0 skipped
+mvn package -DskipTests: BUILD SUCCESS
+Tes dilakukan melalui JUnit dan MockMvc.
